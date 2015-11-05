@@ -36,10 +36,10 @@ Construct a `TOP500 Index` for the US market according to the following rules:
 
 ### Data
 
-* End of Day US Stock Prices: https://www.quandl.com/data/EOD
-* Core US Fundamental Data: https://www.quandl.com/data/SF1
+* [End of Day US Stock Prices](https://www.quandl.com/data/EOD)
+* [Core US Fundamental Data](https://www.quandl.com/data/SF1)
 
 ### Reference
 
-* Methodology - S&P 500 Dow Jones Indices, https://us.spindices.com/
+* Methodology - S&P 500 Dow Jones Indices
 * Russell U.S. Equity Indexes Construction & Methodology,
