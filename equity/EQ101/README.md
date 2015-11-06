@@ -27,12 +27,12 @@ Construct a `TOP500 Index` for the US market according to the following rules:
    index or the S&P 500 total return index? what is the difference? Which index
    does SPY (the ETF) track?).
 
-### Bonus Problems
+### Bonus Questions
 
-0. construct a `MID500 Index` with stocks whose market cap ranks from the 501
+0. construct a `MID500 Index` with stocks whose market cap ranks from 501
    to 1000 within the same universe. Compare the performance.
 0. compare index methodology for our `TOP500 Index`, the `S&P 500 index`, and
-   the `Russell 1000` index
+   the `Russell 1000 index`
 
 ### Data
 
