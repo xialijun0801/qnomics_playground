@@ -1,7 +1,7 @@
 Quant Equity Problem Set
 ========================
 
-EQ000 Market Cap Indexes
+EQ101 Market Cap Indexes
 -------------------------
 ### Background
 
@@ -46,35 +46,35 @@ Construct a `TOP500 Index` for the US market according to the following rules:
 * Methodology - S&P 500 Dow Jones Indices
 * Russell U.S. Equity Indexes Construction & Methodology,
 
-EQ010 Smart Beta Indexes - Low Volatility
+EQ201 Smart Beta Indexes - Low Volatility
 -------------------------
 
-EQ011 Smart Beta Indexes - Value vs Growth
+EQ202 Smart Beta Indexes - Value vs Growth
 ------------------------
 
-EQ020 Basic Risk Models - CAPM
+EQ301 Basic Risk Models - CAPM
 ------------------------
 
-EQ021 Basic Risk Model - Fama French 3 factors
+EQ302 Basic Risk Model - Fama French 3 factors
 ------------------------
 
-EQ030 Basic Quant Portfolio - Minimum Variance
+EQ401 Basic Quant Portfolio - Minimum Variance
 ------------------------
 
-EQ031 Basic Quant Portfolio - Efficient Frontier
+EQ402 Basic Quant Portfolio - Efficient Frontier
 ------------------------
 
-EQ032 Basic Quant Portfolio - Beta Neutral with Value-Tilt
+EQ403 Basic Quant Portfolio - Beta Neutral with Value-Tilt
 ------------------------
 
-EQ040 Advanced Risk Models - Three Types of Factors
+EQ501 Advanced Risk Models - Three Types of Factors
 ------------------------
 
-EQ050 Advanced Quant Portfolio - Mean Variance Optimization
+EQ601 Advanced Quant Portfolio - Mean Variance Optimization
 ------------------------
 
-EQ051 Advanced Quant Portfolio - Factor Mimicking Portfolios
+EQ602 Advanced Quant Portfolio - Factor Mimicking Portfolios
 ------------------------
 
-EQ052 Advanced Quant Portfolio - Multi-factor Portfolios
+EQ603 Advanced Quant Portfolio - Multi-factor Portfolios
 ------------------------
