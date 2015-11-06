@@ -8,6 +8,9 @@ that low volatility stocks, though safer, on aggregate delivers higher returns
 than high volatility stocks. Thus born many low volatility ETF such as `SPLV`
 and `USMV`.
 
+Low volatility strategy is one type of
+[Smart Beta strategies](http://www.investopedia.com/terms/s/smart-beta.asp). 
+
 ### Problem Description
 
 Construct a `TOP500LV Index` (low volatility) and a `TOP500HV Index` (high
