@@ -1,4 +1,4 @@
-EQ000 Market Cap Indexes
+EQ101 Market Cap Indexes
 -------------------------
 
 ### Background
