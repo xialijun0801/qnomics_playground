@@ -2,6 +2,7 @@ Quant Equity Problem Set
 ========================
 
 * EQ101 Market Cap Indexes
+* EQ102 Market Cap Indexes - Index Valuation
 * EQ201 Smart Beta Indexes - Low Volatility
 * EQ202 Smart Beta Indexes - Value vs Growth
 * EQ301 Basic Risk Models - CAPM

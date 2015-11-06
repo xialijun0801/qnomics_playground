@@ -9,7 +9,7 @@ than high volatility stocks. Thus born many low volatility ETF such as `SPLV`
 and `USMV`.
 
 Low volatility strategy is one type of
-[Smart Beta strategies](http://www.investopedia.com/terms/s/smart-beta.asp). 
+[Smart Beta strategies](http://www.investopedia.com/terms/s/smart-beta.asp).
 
 ### Problem Description
 

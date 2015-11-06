@@ -33,6 +33,8 @@ Construct a `TOP500 Index` for the US market according to the following rules:
    to 1000 within the same universe. Compare the performance.
 0. compare index methodology for our `TOP500 Index`, the `S&P 500 index`, and
    the `Russell 1000 index`
+0. Among all stocks in the universe, what percentage of market capitalization
+   does the `TOP500 Index` grabs. 
 
 ### Data
 
