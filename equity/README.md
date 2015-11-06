@@ -1,9 +1,9 @@
 Quant Equity Problem Set
 ========================
 
-* EQ101 Market Cap Indexes
-* EQ102 Market Cap Indexes - Index Valuation
-* EQ201 Smart Beta Indexes - Low Volatility
+* [EQ101 Market Cap Indexes](https://github.com/qnomics/qnomics_playground/tree/master/equity/EQ101)
+* [EQ102 Market Cap Indexes - Index Valuation](https://github.com/qnomics/qnomics_playground/tree/master/equity/EQ102)
+* [EQ201 Smart Beta Indexes - Low Volatility](https://github.com/qnomics/qnomics_playground/tree/master/equity/EQ201)
 * EQ202 Smart Beta Indexes - Value vs Growth
 * EQ301 Basic Risk Models - CAPM
 * EQ302 Basic Risk Model - Fama French 3 factors
