@@ -148,7 +148,7 @@ merge = pd.concat([MV.shift(1), MV_2], axis =1)
 # In[770]:
 
 divisor = MV.shift(1).div(MV_2)
-
+divisor = divisor.cumprod(axis = 0)
 
 # In[771]:
 
