@@ -1,5 +1,8 @@
 
 # coding: utf-8
+#*************************************************************************#
+                                   #EQ101#
+#*************************************************************************#
 
 # In[2]:
 
@@ -215,6 +218,45 @@ top500_max_drawdown.plot()
 # In[262]:
 
 midIndex_max_drawdown.plot()
+
+
+#*************************************************************************#
+                                   #EQ102#
+#*************************************************************************#
+#calcualte the earnings for one year
+top500_year_rets = top500Index_adjusted.diff(252)
+#moving average
+# for Robert Shiller's Cyclically Adjusted PE Ratio it is using 10 year moving average
+# for this one I try one year moving average
+top500_year_rets_ma_10 = pd.rolling_mean(top500_year_rets, 2520, min_periods=1)
+top500_year_rets_ma = pd.rolling_mean(top500_year_rets, 252, min_periods=1)
+
+
+# In[98]:
+
+top500_ep = 1/(top500Index_adjusted.div(top500_year_rets_ma))
+top500_ep_cape = 1/(top500Index_adjusted.div(top500_year_rets_ma_10))
+
+
+# In[99]:
+
+top500_pe = pd.DataFrame(1/top500_ep)
+top500_pe_cape = pd.DataFrame(1/top500_ep_cape)
+
+
+# In[101]:
+
+#using moving average return
+top500_pe.columns = ['PE']
+top500_pe[(top500_pe['PE'] < 0) 
+          | (top500_pe['PE'] > 50) ] = None
+top500_pe.plot()
+
+
+# In[102]:
+
+top500_pe_cape.plot()
+
 
 
 # In[ ]:
