@@ -1,23 +1,23 @@
 
 # coding: utf-8
 
-# In[253]:
+# In[2]:
 
 import pandas as pd
 equityDataSmall = "data/sp500_data_small.csv"
 fundamentalDataSmall = "data/sp500_fundamental_small_s.csv"
 
 
-# In[254]:
+# In[156]:
 
 from datetime import datetime
 dtypes = [str, datetime, float] 
-fields = ['Ticker', 'Date', 'AClose']
-equityPrice = pd.read_csv(equityDataSmall, usecols= [0, 1, 12], names = fields)
+fields = ['Ticker', 'Date', 'AOpen', 'AClose']
+equityPrice = pd.read_csv(equityDataSmall, usecols= [0, 1, 11, 12], names = fields)
 equityPrice.index = equityPrice['Ticker']
 
 
-# In[663]:
+# In[157]:
 
 fields = ['Ticker', 'Field', 'Frequency', 'Date', 'Value']
 equityFundamental = pd.read_csv(fundamentalDataSmall, skiprows = 1, names = fields, parse_dates=True)
@@ -25,180 +25,196 @@ equityFundamental.index = equityFundamental['Ticker']
 equityShares = equityFundamental[equityFundamental['Field'] == 'SHARESWA']
 
 
-# In[664]:
+# In[158]:
 
 tickers1 = set(equityPrice['Ticker'].unique())
 tickers2 = set(equityShares['Ticker'].unique())
 commonTickers_list = list(tickers1 & tickers2)
 
 
-# In[669]:
+# In[159]:
 
+#some tickers are not avaiable in the fundamental data, so only choose the ones are present
 commonTickers = pd.DataFrame(commonTickers_list)
-
-
-# In[670]:
-
 commonTickers.columns = ['Ticker']
 commonTickers.index = commonTickers['Ticker']
 
 
-# In[671]:
+# In[160]:
 
 equityPrice_1 = pd.merge(equityPrice, commonTickers, how = 'inner', left_index = True, right_index = True)
-
-
-# In[672]:
-
 equityShares_1 = pd.merge(equityShares,commonTickers, how = 'inner', left_index = True, right_index = True)
 
 
-# In[673]:
+# In[161]:
 
 equityShares_1.index = pd.to_datetime(equityShares_1['Date'])
 equityPrice_1.index = pd.to_datetime(equityPrice_1['Date'])
 
 
-# In[684]:
+# In[176]:
 
-equityShares_2 = equityShares_1[equityShares_1['Date'] > '2004-01-01']
-equityShares_2 = equityShares_2[equityShares_2['Date'] < '2015-01-01']
-equityPrice_2 = equityPrice_1[equityPrice_1['Date'] > '2005-01-01']
-equityPrice_2 = equityPrice_2[equityPrice_2['Date'] < '2015-01-01']
-
-
-# In[685]:
-
-equityShares_3 = equityShares_2[equityShares_2['Frequency'] == 'MRQ']
+equityShares_2 = equityShares_1[(equityShares_1['Date'] > '2004-01-01') 
+                                & (equityShares_1['Date'] < '2015-01-01')
+                                & (equityShares_1['Frequency'] == 'MRQ')]
+equityPrice_2 = equityPrice_1[ (equityPrice_1['Date'] > '2005-01-01')
+                              & (equityPrice_1['Date'] < '2015-01-01')]
 
 
-# In[686]:
+# In[163]:
 
-equityShares_4 = pd.DataFrame(columns = ['Ticker', 'Shares'])
+equityShares_adjusted = pd.DataFrame(columns = ['Ticker', 'Shares'])
 for ticker in commonTickers_list:
-    temp = equityShares_3[equityShares_3['Ticker_x'] == ticker]
+    temp = equityShares_2[equityShares_2['Ticker_x'] == ticker]
     if (len(temp) > 0):
         temp = temp.resample('B', fill_method = 'ffill')[['Value']]
         temp['Ticker'] = ticker
         temp.columns = ['Shares', 'Ticker']
-        equityShares_4 = pd.concat([equityShares_4, temp])
+        equityShares_adjusted = pd.concat([equityShares_adjusted, temp])
 
 
-# In[693]:
+# In[177]:
 
-equityPrice_2 = equityPrice_2[['Ticker_x', 'AClose']]
-equityPrice_2.columns = ['Ticker','AClose']
-
-
-# In[677]:
-
-equityPrice_2_trans = equityPrice_2.reset_index().rename(columns = {0: 'Date'}).pivot('Date', 'Ticker', 'AClose')
+equityPrice_2 = equityPrice_2[['Ticker_x', 'AOpen', 'AClose']]
+equityPrice_2.columns = ['Ticker', 'AOpen', 'AClose']
 
 
-# In[678]:
+# In[180]:
 
-equityPrice_2_trans = equityPrice_2_trans.fillna(0) 
-
-
-# In[680]:
-
-equityShares_4_trans = equityShares_4.reset_index().rename(columns = {'index': 'Date'}).pivot('Date', 'Ticker', 'Shares')
+equityPrice_trans = equityPrice_2.reset_index().rename(columns = {0: 'Date'}).pivot('Date', 'Ticker', 'AClose').fillna(0)
+#the equity price at open
+equityPrice_open_trans = equityPrice_2.reset_index().rename(columns = {0: 'Date'}).pivot('Date', 'Ticker', 'AOpen').fillna(0)
+equityShares_trans = equityShares_adjusted.reset_index().rename(columns = {'index': 'Date'}).pivot('Date', 'Ticker', 'Shares').fillna(0)
 
 
-# In[681]:
+# In[181]:
 
-equityShares_4_trans = equityShares_4_trans.fillna(0)
-
-
-# In[705]:
-
-multiply_result = equityPrice_2_trans.multiply(equityShares_4_trans, axis=0, level=None, fill_value=0)
+totalMarketValue_each = equityPrice_trans.multiply(equityShares_trans, axis=0, level=None, fill_value=0)
+#market value at open time
+totalMarketValue_open_each = equityPrice_open_trans.multiply(equityShares_trans, axis=0, level=None, fill_value=0)
 import numpy as np
-mask = np.all(np.isnan(multiply_result) | np.equal(multiply_result, 0), axis=1)
-multiply_result = multiply_result[~mask]
+mask = np.all(np.isnan(totalMarketValue_each) | np.equal(totalMarketValue_each, 0), axis=1)
+totalMarketValue_each= totalMarketValue_each[~mask]
+totalMarketValue_open_each= totalMarketValue_open_each[~mask]
 
 
-# In[706]:
+# In[167]:
 
-add_result = multiply_result.cumsum(axis = 1)
-
-
-# In[752]:
-
-MV = add_result.ix[:, -1]
-MV.columns = ['Past']
-
-
-# In[743]:
-
-multiply_result_2 = equityPrice_2_trans.shift(1).multiply(equityShares_4_trans, axis=0, level=None, fill_value=0)
-import numpy as np
-mask = np.all(np.isnan(multiply_result_2) | np.equal(multiply_result_2, 0), axis=1)
-multiply_result_2 = multiply_result_2[~mask]
-add_result_2 = multiply_result_2.cumsum(axis = 1)
-MV_2 = add_result_2.ix[:, -1]
-MV_2.columns = ['Now']
+#pick the top 500
+# the question here is how to reselect the top 500, it does not make sense to pick up the top 500 each day, 
+# it does not make sense to keep using the same set of stock either
+# shoud reselect at certain time interval
+totalMarketValueMean = totalMarketValue_each.mean(axis = 0)
+totalMarketValueMean = pd.DataFrame(totalMarketValueMean)
+top500Security = list(totalMarketValueMean.sort().ix[0:499, ].index)
 
 
-# In[740]:
+#bonus question pick the mid 500 - 10000
 
-merge = pd.concat([MV.shift(1), MV_2], axis =1)
+# In[168]:
 
-
-# In[770]:
-
-divisor = MV.shift(1).div(MV_2)
-divisor = divisor.cumprod(axis = 0)
-
-# In[771]:
-
-MV_adjusted = MV.multiply(divisor)
+totalMarketValueMean.columns = ['Mean'] 
+midSecurity = list(totalMarketValueMean[(totalMarketValueMean['Mean'] < 1000e+06)
+                                  & (totalMarketValueMean['Mean'] > 500e+06)].index) # 500 to 1000 million
 
 
-# In[774]:
+# In[183]:
+
+top500MarketValue_each = totalMarketValue_each[top500Security]
+midMarketValue_each = totalMarketValue_each[midSecurity]
+#the market value at open time
+top500MarketValue_open_each = totalMarketValue_each[top500Security]
+midMarketValue_open_each = totalMarketValue_each[midSecurity]
+
+
+# In[201]:
+
+top500TotalMarketValue = top500MarketValue_each.cumsum(axis = 1).ix[:, -1]
+midTotalMarketValue = midMarketValue_each.cumsum(axis = 1).ix[:, -1]
+top500TotalMarketValue_open = top500MarketValue_open_each.cumsum(axis = 1).ix[:, -1]
+midTotalMarketValue_open = midMarketValue_open_each.cumsum(axis = 1).ix[:, -1]
+
+
+# In[205]:
+
+# to compare with the open market value of today with close market value of yesterday, which must be equal
+top500TotalMarketValue_past = top500TotalMarketValue.shift(1)
+top500TotalMarketValue_past.columns = ['Past']
+midTotalMarketValue_past = midTotalMarketValue.shift(1)
+midTotalMarketValue_past.columns = ['Past']
+
+
+# In[209]:
+
+top500Divisor = top500TotalMarketValue.div(top500TotalMarketValue_past)
+midDivisor = top500TotalMarketValue.div(top500TotalMarketValue_past)
+
+
+# In[252]:
+
+top500Index_adjusted = top500TotalMarketValue.div(top500Divisor)[:-3]/top500TotalMarketValue[0]* 100
+midIndex_adjusted = midTotalMarketValue.div(midDivisor)[:-3]/midTotalMarketValue[0] * 100
+compare = top500Index_adjusted/midIndex_adjusted 
+
+
+# In[260]:
 
 import matplotlib.pyplot as plt
 get_ipython().magic(u'matplotlib inline')
-MV_adjusted.plot()
+plt.figure(1)
+
+plt.subplot(311)
+plt.plot(top500Index_adjusted)
+plt.subplot(312)
+plt.plot(midIndex_adjusted )
+
+plt.subplot(313)
+plt.plot(compare)
 
 
-# In[775]:
+# In[233]:
 
 #use daily return to calculate annualized volatility and Sharpe ratio on the rolling 12M basis over the past 5 years.
-daily_rets = MV_adjusted.pct_change()
+top500_daily_rets = top500Index_adjusted.pct_change()
+mid_daily_rets = midIndex_adjusted.pct_change() 
 
 
-# In[780]:
+# In[234]:
 
-data_mean = pd.rolling_mean(daily_rets,window = 252) 
-data_std = pd.rolling_std(daily_rets, window = 252)
-sr = data_mean.div(data_std)*np.sqrt(252)
+top500_data_mean = pd.rolling_mean(top500_daily_rets,window = 252) 
+top500_data_std = pd.rolling_std(top500_daily_rets, window = 252)
+top500_sr = top500_data_mean.div(top500_daily_rets)*np.sqrt(252)
 
-
-# In[781]:
-
-sr.plot()
-
-
-# In[788]:
-
-data_max = pd.rolling_max(MV_adjusted,window = 252) 
-data_min = pd.rolling_min(MV_adjusted, window = 252)
+mid_data_mean = pd.rolling_mean(mid_daily_rets,window = 252) 
+mid_data_std = pd.rolling_std(mid_daily_rets, window = 252)
+mid_sr = mid_data_mean.div(mid_daily_rets)*np.sqrt(252)
 
 
-# In[789]:
+# In[239]:
 
-diff = data_max- data_min
+top500_max = pd.rolling_max(top500Index_adjusted,window = 252) 
+top500_min = pd.rolling_min(top500Index_adjusted, window = 252)
+
+midIndex_max = pd.rolling_max(midIndex_adjusted,window = 252) 
+midIndex_min = pd.rolling_min(midIndex_adjusted, window = 252)
 
 
-# In[790]:
+# In[261]:
 
-max_drawdown = diff.div(data_max)
+top500_diff = top500_max- top500_min
+top500_max_drawdown = top500_diff.div(top500_max)
+midIndex_diff = midIndex_max- midIndex_min
+midIndex_max_drawdown = midIndex_diff.div(midIndex_max)
 
 
-# In[791]:
+# In[241]:
 
-max_drawdown.plot()
+top500_max_drawdown.plot()
+
+
+# In[262]:
+
+midIndex_max_drawdown.plot()
 
 
 # In[ ]:
