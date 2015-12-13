@@ -222,29 +222,62 @@ midIndex_max_drawdown.plot()
 
 #*************************************************************************#
                                    #EQ102#
-#*************************************************************************#
+#*************************************************************************
+
+
 #calcualte the earnings for one year
-top500_year_rets = top500Index_adjusted.diff(252)
+top500_year_earn = top500Index_adjusted.diff(252)
+top500_year_earn.columns = ['Return']
+
+
+# In[132]:
+
+#get CPI value, and adjusted them by CPI
+from datetime import datetime
+dtypes = [datetime, float] 
+fields = ['Date', 'CPI']
+cpi = pd.read_csv("data/usa_cpi.csv", names = fields, skiprows= 1)
+cpi.index = pd.to_datetime(cpi['Date'])
+cpi = cpi['CPI']
+cpi = cpi.asfreq('B', method = 'ffill')
+
+#calculate the cpi change for one year +1
+cpi_divisor = cpi.pct_change(252) + 1
+
+
+# In[133]:
+
+top500_year_earn_cpi = pd.concat([cpi_divisor, top500_year_earn], axis=1, join='inner')
+
+
+# In[134]:
+
+top500_year_earn_cpi.columns = ['CPI_divisor', 'Earning']
+top500_year_earn_cpi['CPI_Adjusted_Earning'] = top500_year_earn_cpi['Earning'] / top500_year_earn_cpi['CPI_divisor']
+
+
+# In[140]:
+
 #moving average
 # for Robert Shiller's Cyclically Adjusted PE Ratio it is using 10 year moving average
 # for this one I try one year moving average
-top500_year_rets_ma_10 = pd.rolling_mean(top500_year_rets, 2520, min_periods=1)
-top500_year_rets_ma = pd.rolling_mean(top500_year_rets, 252, min_periods=1)
+top500_year_earn_ma_10 = pd.rolling_mean(top500_year_earn, 2520, min_periods=1)
+top500_year_earn_ma = pd.rolling_mean(top500_year_earn, 252, min_periods=1)
 
 
-# In[98]:
+# In[141]:
 
-top500_ep = 1/(top500Index_adjusted.div(top500_year_rets_ma))
-top500_ep_cape = 1/(top500Index_adjusted.div(top500_year_rets_ma_10))
+top500_ep = 1/(top500Index_adjusted.div(top500_year_earn_ma))
+top500_ep_cape = 1/(top500Index_adjusted.div(top500_year_earn_ma_10))
 
 
-# In[99]:
+# In[142]:
 
 top500_pe = pd.DataFrame(1/top500_ep)
 top500_pe_cape = pd.DataFrame(1/top500_ep_cape)
 
 
-# In[101]:
+# In[143]:
 
 #using moving average return
 top500_pe.columns = ['PE']
@@ -253,13 +286,7 @@ top500_pe[(top500_pe['PE'] < 0)
 top500_pe.plot()
 
 
-# In[102]:
+# In[144]:
 
 top500_pe_cape.plot()
-
-
-
-# In[ ]:
-
-
 
